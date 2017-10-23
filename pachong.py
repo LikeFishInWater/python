@@ -12,7 +12,7 @@ fake = Factory.create()
 luoo_site = 'http://www.luoo.net/music/'
 luoo_site_mp3 = 'http://luoo-mp3.kssws.ks-cdn.com/low/luoo/radio%s/%s.mp3'
 
-proxy_ips = [    '27.15.236.236'    ] # Ìæ»»×Ô¼ºµÄ´úÀíIP
+proxy_ips = [    '27.15.236.236'    ] # ï¿½æ»»ï¿½Ô¼ï¿½ï¿½Ä´ï¿½ï¿½ï¿½IP
 headers = {
     'Connection': 'keep-alive',
     'User-Agent': fake.user_agent()
@@ -43,11 +43,11 @@ class LuooSpider(threading.Thread):
         for vol in self.vols:
             self.spider(vol)
         print '\\ncrawl end\\n\\n'
-        def spider(self, vol):
+    def spider(self, vol):
         url = luoo_site + vol
         print 'crawling: ' + url + '\\n'
         res = requests.get(url, proxies=random_proxies())
-                soup = BeautifulSoup(res.content, 'html.parser')
+        soup = BeautifulSoup(res.content, 'html.parser')
         title = soup.find('span', attrs={'class': 'vol-title'}).text
         cover = soup.find('img', attrs={'class': 'vol-cover'})['src']
         desc = soup.find('div', attrs={'class': 'vol-desc'})
@@ -55,16 +55,16 @@ class LuooSpider(threading.Thread):
         track_count = len(track_names)
         tracks = []
         for track in track_names:
-            _id = str(int(track.text[:2])) if (int(vol) < 12) else track.text[:2]  # 12ÆÚÇ°µÄÒôÀÖ±àºÅ1~9ÊÇ1Î»£¨Èç£º1~9£©£¬Ö®ºóµÄ¶¼ÊÇ2Î» 1~9»áÔÚ×ó±ßµæ0£¨Èç£º01~09£©
+            _id = str(int(track.text[:2])) if (int(vol) < 12) else track.text[:2]  # 12ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½1~9ï¿½ï¿½1Î»ï¿½ï¿½ï¿½ç£º1~9ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½2Î» 1~9ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ßµï¿½0ï¿½ï¿½ï¿½ç£º01~09ï¿½ï¿½
             _name = fix_characters(track.text[4:])
             tracks.append({'id': _id, 'name': _name})
             phases = {
-                'phase': vol,                         # ÆÚ¿¯±àºÅ
-                'title': title,                       # ÆÚ¿¯±êÌâ
-                 'cover': cover,                      # ÆÚ¿¯·âÃæ
-                 'desc': desc,                        # ÆÚ¿¯ÃèÊö
-                 'track_count': track_count,          # ½ÚÄ¿Êý
-                 'tracks': tracks                     # ½ÚÄ¿Çåµ¥(½ÚÄ¿±àºÅ£¬½ÚÄ¿Ãû³Æ)
+                'phase': vol,                         # ï¿½Ú¿ï¿½ï¿½ï¿½ï¿½
+                'title': title,                       # ï¿½Ú¿ï¿½ï¿½ï¿½ï¿½ï¿½
+                 'cover': cover,                      # ï¿½Ú¿ï¿½ï¿½ï¿½ï¿½ï¿½
+                 'desc': desc,                        # ï¿½Ú¿ï¿½ï¿½ï¿½ï¿½ï¿½
+                 'track_count': track_count,          # ï¿½ï¿½Ä¿ï¿½ï¿½
+                 'tracks': tracks                     # ï¿½ï¿½Ä¿ï¿½åµ¥(ï¿½ï¿½Ä¿ï¿½ï¿½Å£ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½)
             }
             self.queue.put(phases)
 
