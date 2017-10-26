@@ -30,7 +30,7 @@ H_im = [[[0.4615, -0.1759, 0, 0], [0, 0, -0.1318, 0], [-0.2242, 0, 0, 0.4615], [
 
 scale = 10000
 EsN0 = 10
-EbNo = EsN0 - 10 * np.log10(12 / 4)
+EbN0 = EsN0 - 10 * np.log10(12 / 4)
 sigma = np.sqrt(1 / 2 * 10 ** (-EsN0 / 10))
 iBit = np.random.randint(0, 4, [scale, 6])
 iBitProb = np.zeros((scale, 6, 4))

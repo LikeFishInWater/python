@@ -12,7 +12,12 @@ y = tf.placeholder(shape=[None, 1], dtype=tf.float32)
 w = tf.Variable(tf.ones(10))
 output = 0
 for i in range(10):
-    output += w[i] * x[:, i]
+    # if i % 2 == 0:
+    #     output += w[i] * x[:, i]
+    # else:
+    #     output += x[:, i] / w[i]
+    # output += w[i] * x[:, i]
+    # output += (np.e**(w[i] * x[:, i])-np.e**(-w[i] * x[:, i]))/(np.e**(w[i] * x[:, i])+np.e**(-w[i] * x[:, i]))
 loss = tf.reduce_mean(tf.square(output - y[:, 0]))
 tf.summary.scalar('loss', loss)
 sess = tf.Session()
@@ -36,4 +41,3 @@ for i in range(10000):
     loss_temp = sess.run(loss, feed_dict={x: random_x, y: random_y})
     loss_vec.append(loss_temp)
 sess.close()
-
