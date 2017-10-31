@@ -1,6 +1,6 @@
-import math
 import numpy as np
 import tensorflow as tf
+from tensorflow.python import debug as tf_debug
 
 # # BCH(63,45)
 Rate = 45 / 63
@@ -185,9 +185,9 @@ for i in range(18):
     for j in range(63):
         Hi[i][j] = Hi[i][j] - 1
 
-EbN0 = 3
+EbN0 = 7
 EsN0 = EbN0 - 10 * np.log(1 / Rate) / np.log(10)
-sigma = math.sqrt(1 / 2 * 10 ** (-EsN0 / 10))
+sigma = np.sqrt(1 / 2 * 10 ** (-EsN0 / 10))
 scale = 10000
 trans = np.ones((scale, 63))
 recei = np.ones((scale, 63))
@@ -350,22 +350,23 @@ for i in range(11):
 # loss function
 cross_temp = 0
 for i in range(63):
-    output1[i] = 1 / (1 + math.e ** (-output[i]))
-    cross_temp += (y[:, i] + 1) / 2 * tf.log(tf.clip_by_value(output1[i], 1e-10, 1.0)) + (1 - (y[:, i] + 1) / 2) * tf.log(
-        tf.clip_by_value(1 - output1[i], 1e-10, 1.0))
+    output1[i] = 1 / (1 + np.e ** (-output[i]))
+    cross_temp += (y[:, i] + 1) / 2 * tf.log(output1[i]) + (1 - (y[:, i] + 1) / 2) * tf.log(output1[i])
 cross_entropy = tf.reduce_mean(cross_temp) / (-63)
 
 # # training # #
-learning_rate = 1e-4
+learning_rate = 1e-3
 # train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy)
 train_step = tf.train.AdamOptimizer(learning_rate).minimize(cross_entropy)
 sess = tf.Session()
 init = tf.global_variables_initializer()
 sess.run(init)
+sess=tf_debug.LocalCLIDebugWrapperSession(sess)
+sess.add_tensor_filter('has_inf_or_nan',tf_debug.has_inf_or_nan)
 loss_vec = []
 batch_size = 2000
 f1 = open('test.txt', 'w')
-for i in range(scale):
+for i in range(100000):
     random_index = np.random.choice(scale, size=batch_size)
     T_recei = recei[random_index]
     T_trans = trans[random_index]
@@ -373,10 +374,10 @@ for i in range(scale):
     temp_loss1=sess.run(cross_entropy, feed_dict={x: T_recei, y: T_trans})
     sess.run(train_step, feed_dict={x: T_recei, y: T_trans})
     temp_loss = sess.run(cross_entropy, feed_dict={x: T_recei, y: T_trans})
-    # if i % 50 == 0:
-    print('temp_loss=' + str(temp_loss)+'  temp_loss1='+str(temp_loss1))
-    f1.write(str(temp_loss) + '\n'+str(temp_loss1)+'\n')
-    # print('w1=' + str(sess.run(w1)) + 'w2=' + str(sess.run(w2)))
-    f1.write('w1=' + str(sess.run(w1)) + '\nw2=' + str(sess.run(w2)) + '\n')
-f1.close()
-sess.close()
+    if i % 50 == 0:
+        print('temp_loss=' + str(temp_loss)+'  temp_loss1='+str(temp_loss1))
+        f1.write(str(temp_loss) + '\n'+str(temp_loss1)+'\n')
+        # print('w1=' + str(sess.run(w1)) + 'w2=' + str(sess.run(w2)))
+        f1.write('w1=' + str(sess.run(w1)) + '\nw2=' + str(sess.run(w2)) + '\n')
+# f1.close()
+# sess.close()
