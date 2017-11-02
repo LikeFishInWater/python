@@ -361,8 +361,8 @@ train_step = tf.train.AdamOptimizer(learning_rate).minimize(cross_entropy)
 sess = tf.Session()
 init = tf.global_variables_initializer()
 sess.run(init)
-sess=tf_debug.LocalCLIDebugWrapperSession(sess)
-sess.add_tensor_filter('has_inf_or_nan',tf_debug.has_inf_or_nan)
+sess = tf_debug.LocalCLIDebugWrapperSession(sess)
+sess.add_tensor_filter('has_inf_or_nan', tf_debug.has_inf_or_nan)
 loss_vec = []
 batch_size = 2000
 f1 = open('test.txt', 'w')
@@ -371,12 +371,12 @@ for i in range(100000):
     T_recei = recei[random_index]
     T_trans = trans[random_index]
     # for j in range(1000):
-    temp_loss1=sess.run(cross_entropy, feed_dict={x: T_recei, y: T_trans})
+    temp_loss1 = sess.run(cross_entropy, feed_dict={x: T_recei, y: T_trans})
     sess.run(train_step, feed_dict={x: T_recei, y: T_trans})
     temp_loss = sess.run(cross_entropy, feed_dict={x: T_recei, y: T_trans})
     if i % 50 == 0:
-        print('temp_loss=' + str(temp_loss)+'  temp_loss1='+str(temp_loss1))
-        f1.write(str(temp_loss) + '\n'+str(temp_loss1)+'\n')
+        print('temp_loss=' + str(temp_loss) + '  temp_loss1=' + str(temp_loss1))
+        f1.write(str(temp_loss) + '\n' + str(temp_loss1) + '\n')
         # print('w1=' + str(sess.run(w1)) + 'w2=' + str(sess.run(w2)))
         f1.write('w1=' + str(sess.run(w1)) + '\nw2=' + str(sess.run(w2)) + '\n')
 # f1.close()
