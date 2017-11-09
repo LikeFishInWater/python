@@ -284,7 +284,7 @@ for i in range(18):
             ops_temp = 1
             for t in range(28):
                 if t != j and Hr[i][t] != -1:
-                    ops_temp *= tf.tanh(x[:, Hr[i][t]] / 2)
+                    ops_temp *= tf.tanh(w2[Hr[i][j]] * x[:, Hr[i][t]] / 2)
             ops[0][Hi[i][Hr[i][j]]] = 2 * tf.atanh(ops_temp)
 # variable node
 for i in range(11):
