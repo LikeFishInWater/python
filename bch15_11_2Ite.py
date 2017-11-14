@@ -55,9 +55,8 @@ for i in range(4):
         ops_temp = 1
         for t in range(8):
             if t != j:
-                ops_temp *= (math.e ** (x[:, Hr[i][t]] / 2) - math.e ** (-x[:, Hr[i][t]] / 2)) / (
-                    math.e ** (x[:, Hr[i][t]] / 2) + math.e ** (-x[:, Hr[i][t]] / 2))
-        ops[0][8 * i + j] = 2 * 1 / 2 * tf.log(2 / (1 - ops_temp) - 1)
+                ops_temp *= tf.tanh(x[:, Hr[i][t]] / 2)
+        ops[0][8 * i + j] = 2 * tf.atanh(ops_temp)
 # variable node
 for i in range(4):
     for j in range(8):
@@ -65,9 +64,7 @@ for i in range(4):
         for t in range(4):
             if t != i and H[t][Hr[i][j]] == 1:
                 ops_temp += w1[8 * t + j] * ops[0][Hi[t][Hr[i][j]]]
-        ops_temp /= 2
-        ops[1][8 * i + j] = (math.e ** ops_temp - math.e ** (-ops_temp)) / (
-            math.e ** ops_temp + math.e ** (-ops_temp))
+        ops[1][8 * i + j] = tf.tanh(ops_temp/2)
 # check node
 for i in range(4):
     for j in range(8):
@@ -75,7 +72,7 @@ for i in range(4):
         for t in range(8):
             if t != j:
                 ops_temp *= ops[1][8 * i + t]
-        ops[2][8 * i + j] = 2 * 1 / 2 * tf.log(2 / (1 - ops_temp) - 1)
+        ops[2][8 * i + j] = 2 * tf.atanh(ops_temp)
 # output layer
 for i in range(15):
     output[i] = w2[i] * x[:, i]
@@ -92,7 +89,8 @@ cross_entropy = tf.reduce_mean(cross_temp) / (-15)
 # #training
 learning_rate = 1e-2
 # train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy)
-train_step = tf.train.AdamOptimizer(learning_rate).minimize(cross_entropy)
+# train_step = tf.train.AdamOptimizer(learning_rate).minimize(cross_entropy)
+train_step = tf.train.MomentumOptimizer(learning_rate).minimize(cross_entropy)
 sess = tf.Session()
 init = tf.global_variables_initializer()
 sess.run(init)
