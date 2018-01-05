@@ -20,15 +20,18 @@ for i in [0, 1]:
         mid[0] = A1 * x[:, 0]
     else:
         mid[1] = A2 * x[:, 1]
-model_output = mid[0] + mid[1]+B
+model_output = mid[0] + mid[1] + B
 # mid0 = A1 * x[:, 0]
 # mid1 = A2 * x[:, 1]
 # model_output = mid0 + mid1 + B
 learning_rate = 0.001
+# global_step = tf.Variable(0,trainable=False)
+# learning_rate = tf.train.exponential_decay(0.001, global_step, 1000, 0.5, staircase=Ture)
 # my_opt = tf.train.GradientDescentOptimizer(learning_rate)
 my_opt = tf.train.AdamOptimizer(learning_rate)
 loss = tf.reduce_mean(tf.square(model_output - y[:, 0]))
 train = my_opt.minimize(loss)
+# train = my_opt.minimize(loss,global_step=global_step)
 init = tf.global_variables_initializer()
 sess = tf.Session()
 sess.run(init)
